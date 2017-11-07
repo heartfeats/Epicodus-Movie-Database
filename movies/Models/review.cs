@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using MySql.Data.MySqlClient;
 using System;
 
-namespace Library.Models
+namespace EMDB.Models
 {
   public class Review
   {
@@ -77,7 +77,7 @@ namespace Library.Models
          MySqlConnection conn = DB.Connection();
          conn.Open();
          var cmd = conn.CreateCommand() as MySqlCommand;
-         cmd.CommandText = @"SELECT * FROM movies_users WHERE id = @moviesId;";
+         cmd.CommandText = @"SELECT * FROM movies_users WHERE movies_id = @searchId;";
 
          MySqlParameter searchId = new MySqlParameter();
          searchId.ParameterName = "@searchId";
@@ -101,6 +101,37 @@ namespace Library.Models
          }
          return listReview;
        }
+
+       public static List<Review> GetAllMovieReview(int id)
+        {
+          List<Review> listReview = new List<Review> {};
+          MySqlConnection conn = DB.Connection();
+          conn.Open();
+          var cmd = conn.CreateCommand() as MySqlCommand;
+          cmd.CommandText = @"SELECT * FROM movies_users WHERE users_id = @searchId;";
+
+          MySqlParameter searchId = new MySqlParameter();
+          searchId.ParameterName = "@searchId";
+          searchId.Value = id;
+          cmd.Parameters.Add(searchId);
+
+          var rdr = cmd.ExecuteReader() as MySqlDataReader;
+          while(rdr.Read())
+          {
+            int reviewId = rdr.GetInt32(0);
+            int moviesId = rdr.GetInt32(1);
+            int usersId = rdr.GetInt32(2);
+            string review = rdr.GetString(3);
+            Review newReview = new Review(moviesId, usersId, review);
+            listReview.Add(newReview);
+          }
+          conn.Close();
+          if (conn != null)
+          {
+            conn.Dispose();
+          }
+          return listReview;
+        }
   }
 
 }

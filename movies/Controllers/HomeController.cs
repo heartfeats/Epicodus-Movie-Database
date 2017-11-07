@@ -25,6 +25,44 @@ namespace IMDB.Controllers
           return View(model);
         }
 
+        [HttpGet("/Login")]
+        public ActionResult LoginPage()
+        {
+          return View();
+        }
+
+        [HttpGet("/Create")]
+        public ActionResult CreateAccount()
+        {
+          return View();
+        }
+
+        [HttpPost("/Access")]
+        public ActionResult AccessPage()
+        {
+          Users newUser = new Users(Request.Form["inputName"],Request.Form["inputUser"],Request.Form["inputPass"]);
+          if(newUser.IsNewUsers())
+          {
+            newUser.Save();
+          }
+
+          return View("index");
+        }
+
+        [HttpPost("/Access2")]
+        public ActionResult LoginResult()
+        {
+          Users foundUser = Users.FindUser(Request.Form["inputUser"], Request.Form["inputPass"]);
+          if(foundUser.GetUsername() == "" )
+          {
+            return View("Wrong");
+          }
+          else
+          {
+            return View("Correct", foundUser);
+          }
+        }
+
     }
 
 }
